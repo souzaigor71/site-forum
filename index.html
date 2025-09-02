@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fórum Apocalipse Zumbi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: #e6e6e6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+      color: #ff4d4d;
+    }
+    nav {
+      background: #222;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    nav a {
+      color: #e6e6e6;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #333;
+    }
+    .container {
+      padding: 20px;
+    }
+    .post {
+      background: #262626;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .post h2 {
+      margin-top: 0;
+      color: #ff944d;
+    }
+    .donate {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .donate button {
+      background: #ff4d4d;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .donate button:hover {
+      background: #ff3333;
+    }
+    footer {
+      background: #111;
+      padding: 10px;
+      text-align: center;
+      color: #888;
+    }
+    
+    /* Estilos para as seções ocultas */
+    .hidden {
+      display: none;
+    }
+    .active {
+      background-color: #ff4d4d !important;
+      color: white !important;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Fórum Apocalipse Zumbi</h1>
+    <p>Sobrevivência em qualquer cenário extremo</p>
+  </header>
+
+  <nav>
+    <a href="#" class="nav-link active" data-section="inicio">Início</a>
+    <a href="#" class="nav-link" data-section="publicar">Publicar</a>
+    <a href="#" class="nav-link" data-section="categorias">Categorias</a>
+  </nav>
+
+  <div class="container">
+    <!-- Seção Início (visível por padrão) -->
+    <div id="inicio" class="content-section">
+      <div class="post">
+        <h2>Apocalipse Zumbi: Guia de Sobrevivência</h2>
+        <p><strong>1. Abrigo:</strong> Busque locais altos e com poucas entradas, como prédios abandonados. Reforce portas e janelas.</p>
+        <p><strong>2. Alimentação:</strong> Estoque alimentos enlatados, desidratados e fáceis de conservar. Evite locais lotados (mercados).</p>
+        <p><strong>3. Defesa:</strong> Armas brancas silenciosas (facões, machados) são melhores que armas de fogo que atraem atenção.</p>
+        <p><strong>4. Saúde:</strong> Monte um kit médico com antibióticos, analgésicos, bandagens e água sanitária para esterilizar.</p>
+        <p><strong>5. Estratégia:</strong> Evite aglomerações, viaje em pequenos grupos e tenha sempre uma rota de fuga.</p>
+      </div>
+
+      <div class="post">
+        <h2>Sobrevivência na Floresta</h2>
+        <p><strong>1. Orientação:</strong> Use o sol e o fluxo de rios para não se perder. Se possível, construa marcas no caminho.</p>
+        <p><strong>2. Abrigo:</strong> Monte um abrigo simples com galhos e folhas para se proteger da chuva e insetos.</p>
+        <p><strong>3. Alimentação:</strong> Prefira frutos conhecidos, evite cogumelos e plantas duvidosas. Pesca e armadilhas simples ajudam.</p>
+        <p><strong>4. Água:</strong> Sempre ferva água antes de beber. Se tiver carvão e pano, improvise filtros.</p>
+        <p><strong>5. Defesa:</strong> Fogueiras afastam animais. Carregue um bastão ou lança improvisada.</p>
+      </div>
+
+      <div class="post">
+        <h2>Sobrevivência em Ambientes Nevados</h2>
+        <p><strong>1. Abrigo:</strong> Cavernas de gelo ou iglus improvisados reduzem a perda de calor. Sempre isole o chão com galhos.</p>
+        <p><strong>2. Calor:</strong> Acenda fogueiras pequenas e use roupas em camadas. Evite suar, pois isso congela depois.</p>
+        <p><strong>3. Alimentação:</strong> Caça de pequenos animais (lebres, aves) e pesca em rios congelados são essenciais.</p>
+        <p><strong>4. Água:</strong> Derreta neve antes de beber, nunca coma neve diretamente (reduz temperatura corporal).</p>
+        <p><strong>5. Orientação:</strong> Evite tempestades de neve, cave abrigos temporários até melhorar a visibilidade.</p>
+      </div>
+
+      <div class="post">
+        <h2>Como Sobreviver a uma Explosão Nuclear</h2>
+        <p><strong>1. Abrigo:</strong> Refúgio subterrâneo é ideal. Se não houver, fique em locais sem janelas e reforçados.</p>
+        <p><strong>2. Primeiras horas:</strong> Fique abrigado ao menos 48 horas para evitar radiação inicial.</p>
+        <p><strong>3. Alimentação e Água:</strong> Use apenas alimentos estocados em recipientes fechados. Água deve ser fervida e filtrada.</p>
+        <p><strong>4. Proteção:</strong> Roupas grossas reduzem partículas radioativas na pele. Lave o corpo ao retornar de fora.</p>
+        <p><strong>5. Estratégia:</strong> Evite sair até índices de radiação diminuírem. Tenha um plano de evacuação para regiões seguras.</p>
+      </div>
+
+      <div class="post">
+        <h2>Estratégias em uma Guerra Mundial</h2>
+        <p><strong>1. Segurança:</strong> Abrigos antibombas ou porões reforçados são prioridade.</p>
+        <p><strong>2. Estoque:</strong> Alimentos enlatados, arroz, feijão, água potável and medicamentos essenciais.</p>
+        <p><strong>3. Comunicação:</strong> Rádios de pilha ou manivela ajudam a receber informações sem energia elétrica.</p>
+        <p><strong>4. Defesa:</strong> Evite áreas urbanas com grande presença militar. Regiões rurais são mais seguras.</p>
+        <p><strong>5. Estratégia de longo prazo:</strong> Forme alianças comunitárias, compartilhe recursos e defina rotas de evacuação.</p>
+      </div>
+
+      <div class="donate">
+        <h2>Apoie o Fórum</h2>
+        <p>Se este conteúdo te ajudou, considere fazer uma doação via PIX para manter o projeto vivo.</p>
+        <p><strong>Chave PIX:</strong> seu-pix@exemplo.com</p>
+        <button onclick="copiarPix()">Copiar Chave PIX</button>
+      </div>
+    </div>
+
+    <!-- Seção Publicar (oculta por padrão) -->
+    <div id="publicar" class="content-section hidden">
+      <div class="post">
+        <h2>Publicar Novo Tópico</h2>
+        <form id="post-form">
+          <div style="margin-bottom: 15px;">
+            <label for="titulo" style="display: block; margin-bottom: 5px; font-weight: bold;">Título:</label>
+            <input type="text" id="titulo" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #333; color: white;">
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label for="conteudo" style="display: block; margin-bottom: 5px; font-weight: bold;">Conteúdo:</label>
+            <textarea id="conteudo" rows="6" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #333; color: white;"></textarea>
+          </div>
+          <button type="submit" style="background: #ff4d4d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Publicar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Seção Categorias (oculta por padrão) -->
+    <div id="categorias" class="content-section hidden">
+      <div class="post">
+        <h2>Categorias de Discussão</h2>
+        <ul style="list-style-type: none; padding: 0;">
+          <li style="padding: 10px; border-bottom: 1px solid #444;">
+            <h3 style="margin: 0; color: #ff944d;">Sobrevivência Urbana</h3>
+            <p style="margin: 5px 0;">Técnicas para sobreviver em ambientes urbanos durante um apocalipse</p>
+          </li>
+          <li style="padding: 10px; border-bottom: 1px solid #444;">
+            <h3 style="margin: 0; color: #ff944d;">Sobrevivência Rural</h3>
+            <p style="margin: 5px 0;">Estratégias para ambientes rurais e isolados</p>
+          </li>
+          <li style="padding: 10px; border-bottom: 1px solid #444;">
+            <h3 style="margin: 0; color: #ff944d;">Auto-Defesa</h3>
+            <p style="margin: 5px 0;">Técnicas e equipamentos para defesa pessoal</p>
+          </li>
+          <li style="padding: 10px;">
+            <h3 style="margin: 0; color: #ff944d;">Primeiros Socorros</h3>
+            <p style="margin: 5px 0;">Procedimentos médicos emergenciais em situações de crise</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Fórum Apocalipse Zumbi - Todos os direitos reservados</p>
+  </footer>
+
+  <script>
+    /**
+     * Função robusta para copiar a chave PIX.
+     * Usa navigator.clipboard quando disponível (e em contexto seguro),
+     * e recorre a um fallback (textarea + execCommand) em navegadores que não suportam.
+     */
+    function copiarPix() {
+      const key = "seu-pix@exemplo.com";
+
+      // Tenta usar API moderna
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(key).then(() => {
+          alert("Chave PIX copiada!");
+        }).catch((err) => {
+          console.warn('navigator.clipboard falhou:', err);
+          fallbackCopy(key);
+        });
+        return;
+      }
+
+      // Em alguns casos (ex.: file://) window.isSecureContext é false.
+      // Vamos tentar usar o fallback.
+      fallbackCopy(key);
+    }
+
+    function fallbackCopy(text) {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        // Evita que a textarea mude layout
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        if (successful) {
+          alert('Chave PIX copiada (método alternativo)!');
+        } else {
+          // Se execCommand falhar, mostra prompt para copiar manualmente
+          const msg = 'Não foi possível copiar automaticamente. Copie manualmente a chave abaixo:';
+          window.prompt(msg, text);
+        }
+      } catch (err) {
+        console.error('Erro no fallback de cópia:', err);
+        window.prompt('Não foi possível copiar automaticamente. Copie manualmente a chave abaixo:', text);
+      }
+    }
+
+    // Navegação entre seções
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove a classe active de todos os links
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.remove('active');
+        });
+        
+        // Adiciona a classe active ao link clicado
+        this.classList.add('active');
+        
+        // Oculta todas as seções
+        document.querySelectorAll('.content-section').forEach(section => {
+          section.classList.add('hidden');
+        });
+        
+        // Mostra a seção correspondente
+        const sectionId = this.getAttribute('data-section');
+        document.getElementById(sectionId).classList.remove('hidden');
+      });
+    });
+
+    // Formulário de publicação
+    document.getElementById('post-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const titulo = document.getElementById('titulo').value;
+      const conteudo = document.getElementById('conteudo').value;
+      
+      if (titulo && conteudo) {
+        alert('Tópico publicado com sucesso!');
+        document.getElementById('titulo').value = '';
+        document.getElementById('conteudo').value = '';
+      } else {
+        alert('Por favor, preencha todos os campos.');
+      }
+    });
+
+    // Dica: em alguns navegadores (Chrome) a API de Clipboard só funciona em páginas servidas por HTTPS ou em localhost.
+    // Se você está abrindo o arquivo diretamente (file://), teste com um servidor local:
+    //   python -m http.server 8000
+    // e depois abra http://localhost:8000/nome-do-arquivo.html
+  </script>
+</body>
+</html>
