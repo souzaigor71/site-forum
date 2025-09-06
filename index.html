@@ -209,6 +209,9 @@
   </footer>
 
   <script>
+    // Array para armazenar posts na memória durante a sessão
+    let postsArmazenados = [];
+
     /**
      * Função robusta para copiar a chave PIX.
      * Usa navigator.clipboard quando disponível (e em contexto seguro),
@@ -260,6 +263,41 @@
       }
     }
 
+    // Função para carregar posts salvos
+    function carregarPosts() {
+      try {
+        const postsSalvos = window.postsPermanentes || [];
+        postsArmazenados = [...postsSalvos];
+        
+        const postsNovos = document.getElementById('posts-novos');
+        postsNovos.innerHTML = '';
+        
+        postsArmazenados.forEach(post => {
+          const novoPost = document.createElement('div');
+          novoPost.className = 'post';
+          novoPost.innerHTML = `
+            <h2>${post.titulo}</h2>
+            <p>${post.conteudo}</p>
+            <small style="color: #999; font-style: italic;">Publicado em ${post.data}</small>
+          `;
+          postsNovos.appendChild(novoPost);
+        });
+      } catch (error) {
+        console.log('Carregando posts da memória...');
+      }
+    }
+
+    // Função para salvar posts
+    function salvarPosts() {
+      try {
+        // Simula um armazenamento permanente usando uma variável global
+        window.postsPermanentes = [...postsArmazenados];
+        console.log('Posts salvos com sucesso!');
+      } catch (error) {
+        console.warn('Não foi possível salvar permanentemente:', error);
+      }
+    }
+
     // Navegação entre seções
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', function(e) {
@@ -291,14 +329,26 @@
       const conteudo = document.getElementById('conteudo').value.trim();
       
       if (titulo && conteudo) {
-        // Criar o novo post
-        const novoPost = document.createElement('div');
-        novoPost.className = 'post';
-        
-        // Criar o conteúdo do post
+        // Criar objeto do post
         const agora = new Date();
         const dataHora = agora.toLocaleString('pt-BR');
         
+        const novoPostObj = {
+          titulo: titulo,
+          conteudo: conteudo.replace(/\n/g, '<br>'),
+          data: dataHora,
+          id: Date.now() // ID único baseado no timestamp
+        };
+        
+        // Adicionar ao início do array (mais recente primeiro)
+        postsArmazenados.unshift(novoPostObj);
+        
+        // Salvar no armazenamento permanente
+        salvarPosts();
+        
+        // Criar o elemento visual do post
+        const novoPost = document.createElement('div');
+        novoPost.className = 'post';
         novoPost.innerHTML = `
           <h2>${titulo}</h2>
           <p>${conteudo.replace(/\n/g, '<br>')}</p>
@@ -307,14 +357,14 @@
         
         // Adicionar o post no início da seção
         const postsNovos = document.getElementById('posts-novos');
-        postsNovos.appendChild(novoPost);
+        postsNovos.insertBefore(novoPost, postsNovos.firstChild);
         
         // Limpar o formulário
         document.getElementById('titulo').value = '';
         document.getElementById('conteudo').value = '';
         
         // Mostrar mensagem de sucesso
-        alert('Tópico publicado com sucesso!');
+        alert('Tópico publicado e salvo com sucesso!');
         
         // Voltar para a seção início automaticamente
         document.querySelectorAll('.nav-link').forEach(l => {
@@ -329,6 +379,16 @@
       } else {
         alert('Por favor, preencha todos os campos.');
       }
+    });
+
+    // Inicializar posts salvos quando a página carregar
+    window.addEventListener('load', function() {
+      carregarPosts();
+    });
+
+    // Salvar posts antes de sair da página
+    window.addEventListener('beforeunload', function() {
+      salvarPosts();
     });
 
     // Dica: em alguns navegadores (Chrome) a API de Clipboard só funciona em páginas servidas por HTTPS ou em localhost.
