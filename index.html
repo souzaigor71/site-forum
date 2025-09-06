@@ -105,6 +105,8 @@
   <div class="container">
     <!-- Seção Início (visível por padrão) -->
     <div id="inicio" class="content-section">
+      <div id="posts-novos"></div>
+      
       <div class="post">
         <h2>Apocalipse Zumbi: Guia de Sobrevivência</h2>
         <p><strong>1. Abrigo:</strong> Busque locais altos e com poucas entradas, como prédios abandonados. Reforce portas e janelas.</p>
@@ -285,31 +287,42 @@
     // Formulário de publicação
     document.getElementById('post-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const titulo = document.getElementById('titulo').value;
-      const conteudo = document.getElementById('conteudo').value;
+      const titulo = document.getElementById('titulo').value.trim();
+      const conteudo = document.getElementById('conteudo').value.trim();
       
       if (titulo && conteudo) {
-        // Criar novo post
+        // Criar o novo post
         const novoPost = document.createElement('div');
         novoPost.className = 'post';
+        
+        // Criar o conteúdo do post
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR');
+        
         novoPost.innerHTML = `
           <h2>${titulo}</h2>
           <p>${conteudo.replace(/\n/g, '<br>')}</p>
-          <small style="color: #999; font-style: italic;">Publicado agora</small>
+          <small style="color: #999; font-style: italic;">Publicado em ${dataHora}</small>
         `;
         
-        // Adicionar o novo post no topo da seção início (antes da seção donate)
-        const secaoInicio = document.getElementById('inicio');
-        const donate = document.querySelector('.donate');
-        secaoInicio.insertBefore(novoPost, donate);
+        // Adicionar o post no início da seção
+        const postsNovos = document.getElementById('posts-novos');
+        postsNovos.appendChild(novoPost);
         
-        alert('Tópico publicado com sucesso!');
+        // Limpar o formulário
         document.getElementById('titulo').value = '';
         document.getElementById('conteudo').value = '';
         
-        // Voltar automaticamente para a seção início
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+        // Mostrar mensagem de sucesso
+        alert('Tópico publicado com sucesso!');
+        
+        // Voltar para a seção início automaticamente
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.remove('active');
+        });
+        document.querySelectorAll('.content-section').forEach(section => {
+          section.classList.add('hidden');
+        });
         document.querySelector('[data-section="inicio"]').classList.add('active');
         document.getElementById('inicio').classList.remove('hidden');
         
