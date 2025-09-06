@@ -209,8 +209,8 @@
   </footer>
 
   <script>
-    // Variável global para armazenar posts
-    let postsDoForum = [];
+    // Variável global para persistir posts
+    window.forumPosts = window.forumPosts || [];
 
     /**
      * Função robusta para copiar a chave PIX.
@@ -263,95 +263,59 @@
       }
     }
 
-    // Função para salvar posts - USANDO MÚLTIPLAS ESTRATÉGIAS
-    function salvarPosts() {
+    // Função para salvar posts no armazenamento local
+    function salvarPostsLocal() {
       try {
-        // Estratégia 1: LocalStorage (mais comum)
-        if (typeof(Storage) !== "undefined") {
-          localStorage.setItem('forumApocalipsePosts', JSON.stringify(postsDoForum));
-        }
+        const postsParaSalvar = JSON.stringify(window.forumPosts);
+        // Usar cookie como fallback para persistência
+        document.cookie = `forumPosts=${encodeURIComponent(postsParaSalvar)};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
         
-        // Estratégia 2: SessionStorage como backup
-        if (typeof(Storage) !== "undefined") {
-          sessionStorage.setItem('forumApocalipsePosts', JSON.stringify(postsDoForum));
-        }
+        // Também salvar em uma propriedade do document para maior persistência
+        document.forumPostsBackup = window.forumPosts;
         
-        // Estratégia 3: Variável global persistente
-        window.postsBackup = JSON.stringify(postsDoForum);
-        
-        // Estratégia 4: Cookie como último recurso
-        const postsString = JSON.stringify(postsDoForum);
-        document.cookie = `forumPosts=${encodeURIComponent(postsString)};expires=Fri, 31 Dec 2099 23:59:59 GMT;path=/;SameSite=Lax`;
-        
-        console.log('✅ Posts salvos com sucesso! Total:', postsDoForum.length);
-        return true;
+        console.log('Posts salvos com sucesso!');
       } catch (error) {
-        console.error('❌ Erro ao salvar posts:', error);
-        return false;
+        console.warn('Erro ao salvar posts:', error);
       }
     }
 
-    // Função para carregar posts - USANDO MÚLTIPLAS ESTRATÉGIAS
-    function carregarPosts() {
+    // Função para carregar posts do armazenamento local
+    function carregarPostsLocal() {
       try {
-        let posts = [];
+        // Primeiro tenta recuperar do cookie
+        const cookies = document.cookie.split(';');
+        let postsString = null;
         
-        // Estratégia 1: LocalStorage
-        if (typeof(Storage) !== "undefined" && localStorage.getItem('forumApocalipsePosts')) {
-          const postsStorage = localStorage.getItem('forumApocalipsePosts');
-          posts = JSON.parse(postsStorage);
-          console.log('📦 Posts carregados do LocalStorage:', posts.length);
-        }
-        
-        // Estratégia 2: SessionStorage se localStorage falhou
-        else if (typeof(Storage) !== "undefined" && sessionStorage.getItem('forumApocalipsePosts')) {
-          const postsSession = sessionStorage.getItem('forumApocalipsePosts');
-          posts = JSON.parse(postsSession);
-          console.log('📦 Posts carregados do SessionStorage:', posts.length);
-        }
-        
-        // Estratégia 3: Variável global
-        else if (window.postsBackup) {
-          posts = JSON.parse(window.postsBackup);
-          console.log('📦 Posts carregados da variável global:', posts.length);
-        }
-        
-        // Estratégia 4: Cookie como último recurso
-        else {
-          const cookies = document.cookie.split(';');
-          for (let cookie of cookies) {
-            const [name, value] = cookie.trim().split('=');
-            if (name === 'forumPosts') {
-              posts = JSON.parse(decodeURIComponent(value));
-              console.log('📦 Posts carregados do Cookie:', posts.length);
-              break;
-            }
+        for (let cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === 'forumPosts') {
+            postsString = decodeURIComponent(value);
+            break;
           }
         }
         
-        postsDoForum = posts || [];
-        return postsDoForum;
+        if (postsString) {
+          window.forumPosts = JSON.parse(postsString);
+        } else if (document.forumPostsBackup) {
+          // Fallback para propriedade do document
+          window.forumPosts = document.forumPostsBackup;
+        }
+        
+        return window.forumPosts || [];
       } catch (error) {
-        console.warn('⚠️ Erro ao carregar posts:', error);
-        postsDoForum = [];
+        console.warn('Erro ao carregar posts:', error);
         return [];
       }
     }
 
-    // Função para exibir posts na página
-    function exibirPosts() {
-      const container = document.getElementById('posts-novos');
-      container.innerHTML = '';
+    // Função para exibir todos os posts salvos
+    function exibirPostsSalvos() {
+      const postsContainer = document.getElementById('posts-novos');
+      postsContainer.innerHTML = '';
       
-      if (postsDoForum.length === 0) {
-        console.log('📭 Nenhum post para exibir');
-        return;
-      }
+      const posts = carregarPostsLocal();
       
-      // Ordenar posts por data (mais recente primeiro)
-      postsDoForum.sort((a, b) => b.timestamp - a.timestamp);
-      
-      postsDoForum.forEach(post => {
+      posts.forEach(post => {
         const postElement = document.createElement('div');
         postElement.className = 'post';
         postElement.innerHTML = `
@@ -359,10 +323,8 @@
           <p>${post.conteudo}</p>
           <small style="color: #999; font-style: italic;">Publicado em ${post.data}</small>
         `;
-        container.appendChild(postElement);
+        postsContainer.appendChild(postElement);
       });
-      
-      console.log('✅ Posts exibidos na página:', postsDoForum.length);
     }
 
     // Navegação entre seções
@@ -389,82 +351,76 @@
       });
     });
 
-    // Formulário de publicação - CÓDIGO PRINCIPAL
+    // Formulário de publicação
     document.getElementById('post-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const titulo = document.getElementById('titulo').value.trim();
       const conteudo = document.getElementById('conteudo').value.trim();
       
-      if (titulo === '' || conteudo === '') {
-        alert('❌ Por favor, preencha todos os campos!');
-        return;
+      if (titulo && conteudo) {
+        // Criar objeto do post
+        const agora = new Date();
+        const dataHora = agora.toLocaleString('pt-BR');
+        
+        const novoPost = {
+          titulo: titulo,
+          conteudo: conteudo.replace(/\n/g, '<br>'),
+          data: dataHora,
+          id: Date.now()
+        };
+        
+        // Adicionar ao array global
+        window.forumPosts.unshift(novoPost);
+        
+        // Salvar imediatamente
+        salvarPostsLocal();
+        
+        // Criar elemento visual
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+          <h2>${titulo}</h2>
+          <p>${conteudo.replace(/\n/g, '<br>')}</p>
+          <small style="color: #999; font-style: italic;">Publicado em ${dataHora}</small>
+        `;
+        
+        // Adicionar no topo
+        const postsContainer = document.getElementById('posts-novos');
+        postsContainer.insertBefore(postElement, postsContainer.firstChild);
+        
+        // Limpar formulário
+        document.getElementById('titulo').value = '';
+        document.getElementById('conteudo').value = '';
+        
+        alert('Tópico publicado e salvo permanentemente!');
+        
+        // Voltar para início
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.remove('active');
+        });
+        document.querySelectorAll('.content-section').forEach(section => {
+          section.classList.add('hidden');
+        });
+        document.querySelector('[data-section="inicio"]').classList.add('active');
+        document.getElementById('inicio').classList.remove('hidden');
+        
+      } else {
+        alert('Por favor, preencha todos os campos.');
       }
-      
-      // Criar o post
-      const agora = new Date();
-      const novoPost = {
-        id: Date.now(),
-        titulo: titulo,
-        conteudo: conteudo.replace(/\n/g, '<br>'),
-        data: agora.toLocaleString('pt-BR'),
-        timestamp: agora.getTime()
-      };
-      
-      // Adicionar ao array
-      postsDoForum.unshift(novoPost);
-      
-      // SALVAR IMEDIATAMENTE - CRÍTICO!
-      const salvou = salvarPosts();
-      
-      if (!salvou) {
-        alert('⚠️ Aviso: Pode haver problema no salvamento!');
-      }
-      
-      // Exibir na página
-      exibirPosts();
-      
-      // Limpar formulário
-      document.getElementById('titulo').value = '';
-      document.getElementById('conteudo').value = '';
-      
-      // Mensagem de sucesso
-      alert('🎉 Tópico publicado e SALVO com sucesso!');
-      
-      // Voltar para início
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
-      document.querySelector('[data-section="inicio"]').classList.add('active');
-      document.getElementById('inicio').classList.remove('hidden');
-      
-      // Verificar se realmente salvou
-      setTimeout(() => {
-        const verificacao = carregarPosts();
-        console.log('🔍 Verificação de salvamento - Posts encontrados:', verificacao.length);
-      }, 1000);
     });
 
-    // INICIALIZAÇÃO CRÍTICA - Carregar posts ao abrir a página
+    // Carregar posts ao inicializar a página
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Iniciando fórum...');
-      carregarPosts();
-      exibirPosts();
-      console.log('✅ Fórum inicializado com', postsDoForum.length, 'posts');
+      exibirPostsSalvos();
     });
 
     // Salvar antes de sair da página
     window.addEventListener('beforeunload', function() {
-      salvarPosts();
-      console.log('💾 Posts salvos antes de sair');
+      salvarPostsLocal();
     });
 
-    // Salvar periodicamente a cada 10 segundos
-    setInterval(() => {
-      if (postsDoForum.length > 0) {
-        salvarPosts();
-        console.log('⏰ Salvamento automático - Posts:', postsDoForum.length);
-      }
-    }, 10000);
+    // Salvar periodicamente (a cada 30 segundos)
+    setInterval(salvarPostsLocal, 30000);
 
     // Dica: em alguns navegadores (Chrome) a API de Clipboard só funciona em páginas servidas por HTTPS ou em localhost.
     // Se você está abrindo o arquivo diretamente (file://), teste com um servidor local:
