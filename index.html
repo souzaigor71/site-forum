@@ -289,9 +289,30 @@
       const conteudo = document.getElementById('conteudo').value;
       
       if (titulo && conteudo) {
+        // Criar novo post
+        const novoPost = document.createElement('div');
+        novoPost.className = 'post';
+        novoPost.innerHTML = `
+          <h2>${titulo}</h2>
+          <p>${conteudo.replace(/\n/g, '<br>')}</p>
+          <small style="color: #999; font-style: italic;">Publicado agora</small>
+        `;
+        
+        // Adicionar o novo post no topo da seção início (antes da seção donate)
+        const secaoInicio = document.getElementById('inicio');
+        const donate = document.querySelector('.donate');
+        secaoInicio.insertBefore(novoPost, donate);
+        
         alert('Tópico publicado com sucesso!');
         document.getElementById('titulo').value = '';
         document.getElementById('conteudo').value = '';
+        
+        // Voltar automaticamente para a seção início
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+        document.querySelector('[data-section="inicio"]').classList.add('active');
+        document.getElementById('inicio').classList.remove('hidden');
+        
       } else {
         alert('Por favor, preencha todos os campos.');
       }
