@@ -209,8 +209,8 @@
   </footer>
 
   <script>
-    // Array para armazenar posts na memória durante a sessão
-    let postsArmazenados = [];
+    // Variável global para persistir posts
+    window.forumPosts = window.forumPosts || [];
 
     /**
      * Função robusta para copiar a chave PIX.
@@ -263,39 +263,68 @@
       }
     }
 
-    // Função para carregar posts salvos
-    function carregarPosts() {
+    // Função para salvar posts no armazenamento local
+    function salvarPostsLocal() {
       try {
-        const postsSalvos = window.postsPermanentes || [];
-        postsArmazenados = [...postsSalvos];
+        const postsParaSalvar = JSON.stringify(window.forumPosts);
+        // Usar cookie como fallback para persistência
+        document.cookie = `forumPosts=${encodeURIComponent(postsParaSalvar)};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
         
-        const postsNovos = document.getElementById('posts-novos');
-        postsNovos.innerHTML = '';
+        // Também salvar em uma propriedade do document para maior persistência
+        document.forumPostsBackup = window.forumPosts;
         
-        postsArmazenados.forEach(post => {
-          const novoPost = document.createElement('div');
-          novoPost.className = 'post';
-          novoPost.innerHTML = `
-            <h2>${post.titulo}</h2>
-            <p>${post.conteudo}</p>
-            <small style="color: #999; font-style: italic;">Publicado em ${post.data}</small>
-          `;
-          postsNovos.appendChild(novoPost);
-        });
+        console.log('Posts salvos com sucesso!');
       } catch (error) {
-        console.log('Carregando posts da memória...');
+        console.warn('Erro ao salvar posts:', error);
       }
     }
 
-    // Função para salvar posts
-    function salvarPosts() {
+    // Função para carregar posts do armazenamento local
+    function carregarPostsLocal() {
       try {
-        // Simula um armazenamento permanente usando uma variável global
-        window.postsPermanentes = [...postsArmazenados];
-        console.log('Posts salvos com sucesso!');
+        // Primeiro tenta recuperar do cookie
+        const cookies = document.cookie.split(';');
+        let postsString = null;
+        
+        for (let cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === 'forumPosts') {
+            postsString = decodeURIComponent(value);
+            break;
+          }
+        }
+        
+        if (postsString) {
+          window.forumPosts = JSON.parse(postsString);
+        } else if (document.forumPostsBackup) {
+          // Fallback para propriedade do document
+          window.forumPosts = document.forumPostsBackup;
+        }
+        
+        return window.forumPosts || [];
       } catch (error) {
-        console.warn('Não foi possível salvar permanentemente:', error);
+        console.warn('Erro ao carregar posts:', error);
+        return [];
       }
+    }
+
+    // Função para exibir todos os posts salvos
+    function exibirPostsSalvos() {
+      const postsContainer = document.getElementById('posts-novos');
+      postsContainer.innerHTML = '';
+      
+      const posts = carregarPostsLocal();
+      
+      posts.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+          <h2>${post.titulo}</h2>
+          <p>${post.conteudo}</p>
+          <small style="color: #999; font-style: italic;">Publicado em ${post.data}</small>
+        `;
+        postsContainer.appendChild(postElement);
+      });
     }
 
     // Navegação entre seções
@@ -333,40 +362,39 @@
         const agora = new Date();
         const dataHora = agora.toLocaleString('pt-BR');
         
-        const novoPostObj = {
+        const novoPost = {
           titulo: titulo,
           conteudo: conteudo.replace(/\n/g, '<br>'),
           data: dataHora,
-          id: Date.now() // ID único baseado no timestamp
+          id: Date.now()
         };
         
-        // Adicionar ao início do array (mais recente primeiro)
-        postsArmazenados.unshift(novoPostObj);
+        // Adicionar ao array global
+        window.forumPosts.unshift(novoPost);
         
-        // Salvar no armazenamento permanente
-        salvarPosts();
+        // Salvar imediatamente
+        salvarPostsLocal();
         
-        // Criar o elemento visual do post
-        const novoPost = document.createElement('div');
-        novoPost.className = 'post';
-        novoPost.innerHTML = `
+        // Criar elemento visual
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
           <h2>${titulo}</h2>
           <p>${conteudo.replace(/\n/g, '<br>')}</p>
           <small style="color: #999; font-style: italic;">Publicado em ${dataHora}</small>
         `;
         
-        // Adicionar o post no início da seção
-        const postsNovos = document.getElementById('posts-novos');
-        postsNovos.insertBefore(novoPost, postsNovos.firstChild);
+        // Adicionar no topo
+        const postsContainer = document.getElementById('posts-novos');
+        postsContainer.insertBefore(postElement, postsContainer.firstChild);
         
-        // Limpar o formulário
+        // Limpar formulário
         document.getElementById('titulo').value = '';
         document.getElementById('conteudo').value = '';
         
-        // Mostrar mensagem de sucesso
-        alert('Tópico publicado e salvo com sucesso!');
+        alert('Tópico publicado e salvo permanentemente!');
         
-        // Voltar para a seção início automaticamente
+        // Voltar para início
         document.querySelectorAll('.nav-link').forEach(l => {
           l.classList.remove('active');
         });
@@ -381,15 +409,18 @@
       }
     });
 
-    // Inicializar posts salvos quando a página carregar
-    window.addEventListener('load', function() {
-      carregarPosts();
+    // Carregar posts ao inicializar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      exibirPostsSalvos();
     });
 
-    // Salvar posts antes de sair da página
+    // Salvar antes de sair da página
     window.addEventListener('beforeunload', function() {
-      salvarPosts();
+      salvarPostsLocal();
     });
+
+    // Salvar periodicamente (a cada 30 segundos)
+    setInterval(salvarPostsLocal, 30000);
 
     // Dica: em alguns navegadores (Chrome) a API de Clipboard só funciona em páginas servidas por HTTPS ou em localhost.
     // Se você está abrindo o arquivo diretamente (file://), teste com um servidor local:
